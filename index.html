@@ -1,0 +1,317 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.app{max-width:380px;margin:0 auto;min-height:700px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-xl);overflow:hidden;position:relative}
+.screen{display:none;flex-direction:column;height:700px}
+.screen.active{display:flex}
+.nav-bar{display:flex;justify-content:space-around;align-items:center;padding:12px 0 8px;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 16px;border-radius:var(--border-radius-md);transition:background 0.15s;border:none;background:transparent}
+.nav-item i{font-size:22px;color:var(--color-text-tertiary)}
+.nav-item span{font-size:10px;color:var(--color-text-tertiary)}
+.nav-item.active i,.nav-item.active span{color:#1D9E75}
+.content{flex:1;overflow-y:auto;padding:20px 16px 12px}
+.wave-container{position:relative;width:160px;height:160px;margin:0 auto 20px}
+.wave-circle{width:160px;height:160px;border-radius:50%;background:#E1F5EE;border:3px solid #9FE1CB;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.wave-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,#5DCAA5,#1D9E75);transition:height 0.6s cubic-bezier(.4,0,.2,1);border-radius:50% 50% 0 0 / 20px 20px 0 0}
+.wave-text{position:relative;z-index:2;text-align:center}
+.wave-pct{font-size:28px;font-weight:500;color:#085041}
+.wave-ml{font-size:12px;color:#0F6E56}
+.greeting{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:20px}
+.quick-btns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.q-btn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.15s}
+.q-btn:hover{background:#E1F5EE}
+.q-btn i{font-size:20px;color:#1D9E75}
+.q-btn-text{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.q-btn-sub{font-size:11px;color:var(--color-text-secondary)}
+.streak-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center}
+.stat-num{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.stat-lbl{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.section-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em}
+.log-list{display:flex;flex-direction:column;gap:6px}
+.log-item{display:flex;align-items:center;justify-content:space-between;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.log-left{display:flex;align-items:center;gap:8px}
+.log-left i{font-size:18px;color:#1D9E75}
+.log-ml{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.log-time{font-size:11px;color:var(--color-text-secondary)}
+.log-del{background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:16px;padding:4px}
+.page-title{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-bottom:20px}
+.day-col{display:flex;flex-direction:column;align-items:center;gap:4px}
+.day-name{font-size:10px;color:var(--color-text-secondary)}
+.day-bar-wrap{height:80px;width:28px;background:var(--color-background-secondary);border-radius:6px;display:flex;align-items:flex-end;overflow:hidden}
+.day-bar{width:100%;background:#5DCAA5;border-radius:6px;transition:height 0.4s}
+.day-bar.today{background:#1D9E75}
+.day-dot{width:6px;height:6px;border-radius:50%;background:var(--color-border-tertiary)}
+.day-dot.done{background:#1D9E75}
+.monthly-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin:16px 0 8px}
+.month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.m-day{width:100%;aspect-ratio:1;border-radius:4px;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--color-text-tertiary)}
+.m-day.fill-full{background:#1D9E75;color:#E1F5EE}
+.m-day.fill-half{background:#9FE1CB;color:#085041}
+.m-day.fill-low{background:#E1F5EE;color:#0F6E56}
+.m-day.today-mark{border:1.5px solid #1D9E75}
+.settings-group{margin-bottom:20px}
+.settings-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em}
+.setting-row{display:flex;align-items:center;justify-content:space-between;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:6px;cursor:pointer}
+.setting-left{display:flex;align-items:center;gap:10px}
+.setting-left i{font-size:18px;color:#1D9E75}
+.setting-label{font-size:14px;color:var(--color-text-primary)}
+.setting-val{font-size:13px;color:var(--color-text-secondary)}
+.toggle{width:38px;height:22px;background:#9FE1CB;border-radius:11px;position:relative;cursor:pointer;border:none;transition:background 0.2s}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left 0.2s}
+.toggle.on{background:#1D9E75}
+.toggle.on::after{left:19px}
+.premium-card{background:#085041;border-radius:var(--border-radius-lg);padding:20px;margin-bottom:16px;color:#E1F5EE}
+.premium-title{font-size:18px;font-weight:500;margin-bottom:6px}
+.premium-sub{font-size:13px;color:#9FE1CB;margin-bottom:16px}
+.premium-features{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.pf-item{display:flex;align-items:center;gap:8px;font-size:13px;color:#E1F5EE}
+.pf-item i{font-size:16px;color:#5DCAA5}
+.premium-btn{width:100%;background:#5DCAA5;color:#04342C;border:none;border-radius:var(--border-radius-md);padding:12px;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.15s}
+.premium-btn:hover{background:#9FE1CB}
+.toast{position:absolute;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#085041;color:#E1F5EE;padding:8px 16px;border-radius:20px;font-size:13px;white-space:nowrap;opacity:0;transition:all 0.3s;pointer-events:none;z-index:10}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.add-modal{position:absolute;bottom:0;left:0;right:0;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);border-radius:16px 16px 0 0;padding:20px 16px 24px;z-index:5;transform:translateY(100%);transition:transform 0.3s cubic-bezier(.4,0,.2,1)}
+.add-modal.open{transform:translateY(0)}
+.modal-title{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:16px;text-align:center}
+.amount-display{font-size:40px;font-weight:500;color:#1D9E75;text-align:center;margin-bottom:16px}
+.preset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.preset-btn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 8px;cursor:pointer;font-size:14px;font-weight:500;color:var(--color-text-primary);transition:all 0.15s}
+.preset-btn:hover,.preset-btn.selected{background:#E1F5EE;border-color:#5DCAA5;color:#085041}
+.add-confirm{width:100%;background:#1D9E75;color:#fff;border:none;border-radius:var(--border-radius-md);padding:14px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:8px}
+.add-cancel{width:100%;background:none;border:none;color:var(--color-text-secondary);font-size:14px;cursor:pointer;padding:8px}
+</style>
+<h2 class="sr-only">Aqua — Su ve alışkanlık takip uygulaması</h2>
+<div class="app">
+  <div id="screen-home" class="screen active">
+    <div class="content">
+      <div class="greeting">Merhaba! 👋</div>
+      <div class="sub" id="home-sub">Bugün henüz su içmedin.</div>
+      <div class="wave-container">
+        <div class="wave-circle">
+          <div class="wave-fill" id="wave-fill" style="height:0%"></div>
+          <div class="wave-text">
+            <div class="wave-pct" id="wave-pct">0%</div>
+            <div class="wave-ml" id="wave-ml">0 / 2000 ml</div>
+          </div>
+        </div>
+      </div>
+      <div class="quick-btns">
+        <button class="q-btn" onclick="openAdd(150)"><i class="ti ti-glass" aria-hidden="true"></i><div><div class="q-btn-text">Küçük bardak</div><div class="q-btn-sub">150 ml</div></div></button>
+        <button class="q-btn" onclick="openAdd(250)"><i class="ti ti-glass-full" aria-hidden="true"></i><div><div class="q-btn-text">Orta bardak</div><div class="q-btn-sub">250 ml</div></div></button>
+        <button class="q-btn" onclick="openAdd(330)"><i class="ti ti-bottle" aria-hidden="true"></i><div><div class="q-btn-text">Küçük şişe</div><div class="q-btn-sub">330 ml</div></div></button>
+        <button class="q-btn" onclick="openAdd(500)"><i class="ti ti-droplet" aria-hidden="true"></i><div><div class="q-btn-text">Büyük şişe</div><div class="q-btn-sub">500 ml</div></div></button>
+      </div>
+      <div class="streak-row">
+        <div class="stat-card"><div class="stat-num" id="streak-num">0</div><div class="stat-lbl"><i class="ti ti-flame" aria-hidden="true"></i> Gün serisi</div></div>
+        <div class="stat-card"><div class="stat-num" id="today-total">0</div><div class="stat-lbl"><i class="ti ti-droplet" aria-hidden="true"></i> ml bugün</div></div>
+      </div>
+      <div class="section-title">Bugünkü kayıtlar</div>
+      <div class="log-list" id="log-list"><div style="text-align:center;color:var(--color-text-tertiary);font-size:13px;padding:20px">Henüz kayıt yok</div></div>
+    </div>
+    <nav class="nav-bar">
+      <button class="nav-item active" onclick="goTo('home')"><i class="ti ti-droplet" aria-hidden="true"></i><span>Ana sayfa</span></button>
+      <button class="nav-item" onclick="goTo('stats')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>İstatistik</span></button>
+      <button class="nav-item" onclick="goTo('settings')"><i class="ti ti-settings" aria-hidden="true"></i><span>Ayarlar</span></button>
+    </nav>
+  </div>
+
+  <div id="screen-stats" class="screen">
+    <div class="content">
+      <div class="page-title">İstatistikler</div>
+      <div class="sub" style="margin-bottom:16px">Son 7 günlük takip</div>
+      <div class="week-grid" id="week-grid"></div>
+      <div class="streak-row">
+        <div class="stat-card"><div class="stat-num" id="avg-ml">1450</div><div class="stat-lbl">Ort. günlük ml</div></div>
+        <div class="stat-card"><div class="stat-num" id="best-streak">3</div><div class="stat-lbl">En uzun seri</div></div>
+      </div>
+      <div class="monthly-title">Bu ay</div>
+      <div class="month-grid" id="month-grid"></div>
+    </div>
+    <nav class="nav-bar">
+      <button class="nav-item" onclick="goTo('home')"><i class="ti ti-droplet" aria-hidden="true"></i><span>Ana sayfa</span></button>
+      <button class="nav-item active" onclick="goTo('stats')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>İstatistik</span></button>
+      <button class="nav-item" onclick="goTo('settings')"><i class="ti ti-settings" aria-hidden="true"></i><span>Ayarlar</span></button>
+    </nav>
+  </div>
+
+  <div id="screen-settings" class="screen">
+    <div class="content">
+      <div class="page-title">Ayarlar</div>
+      <div class="sub" style="margin-bottom:20px">Hedef ve bildirimler</div>
+      <div class="premium-card">
+        <div class="premium-title">Aqua Premium</div>
+        <div class="premium-sub">Tüm özelliklerin kilidini aç</div>
+        <div class="premium-features">
+          <div class="pf-item"><i class="ti ti-check" aria-hidden="true"></i>Sınırsız alışkanlık takibi</div>
+          <div class="pf-item"><i class="ti ti-check" aria-hidden="true"></i>Detaylı haftalık rapor</div>
+          <div class="pf-item"><i class="ti ti-check" aria-hidden="true"></i>Akıllı hatırlatma saatleri</div>
+          <div class="pf-item"><i class="ti ti-check" aria-hidden="true"></i>Reklamsız deneyim</div>
+        </div>
+        <button class="premium-btn" onclick="showToast('Premium özelliği yakında!')">Aylık ₺49 — Başla</button>
+      </div>
+      <div class="settings-group">
+        <div class="settings-title">Hedef</div>
+        <div class="setting-row" onclick="changeGoal()">
+          <div class="setting-left"><i class="ti ti-target" aria-hidden="true"></i><span class="setting-label">Günlük hedef</span></div>
+          <span class="setting-val" id="goal-display">2000 ml</span>
+        </div>
+        <div class="setting-row" onclick="changeWeight()">
+          <div class="setting-left"><i class="ti ti-user" aria-hidden="true"></i><span class="setting-label">Kilonuz</span></div>
+          <span class="setting-val" id="weight-display">70 kg</span>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-title">Bildirimler</div>
+        <div class="setting-row">
+          <div class="setting-left"><i class="ti ti-bell" aria-hidden="true"></i><span class="setting-label">Hatırlatıcı</span></div>
+          <button class="toggle on" id="notif-toggle" onclick="this.classList.toggle('on')" aria-label="Bildirimleri aç/kapat"></button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-left"><i class="ti ti-clock" aria-hidden="true"></i><span class="setting-label">Sıklık</span></div>
+          <span class="setting-val">Her 2 saat</span>
+        </div>
+      </div>
+    </div>
+    <nav class="nav-bar">
+      <button class="nav-item" onclick="goTo('home')"><i class="ti ti-droplet" aria-hidden="true"></i><span>Ana sayfa</span></button>
+      <button class="nav-item" onclick="goTo('stats')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>İstatistik</span></button>
+      <button class="nav-item active" onclick="goTo('settings')"><i class="ti ti-settings" aria-hidden="true"></i><span>Ayarlar</span></button>
+    </nav>
+  </div>
+
+  <div class="add-modal" id="add-modal">
+    <div class="modal-title">Su ekle</div>
+    <div class="amount-display" id="modal-amount">250 ml</div>
+    <div class="preset-grid">
+      <button class="preset-btn" onclick="selectPreset(this,100)">100 ml</button>
+      <button class="preset-btn" onclick="selectPreset(this,150)">150 ml</button>
+      <button class="preset-btn selected" onclick="selectPreset(this,250)">250 ml</button>
+      <button class="preset-btn" onclick="selectPreset(this,330)">330 ml</button>
+      <button class="preset-btn" onclick="selectPreset(this,500)">500 ml</button>
+      <button class="preset-btn" onclick="selectPreset(this,750)">750 ml</button>
+    </div>
+    <button class="add-confirm" onclick="confirmAdd()"><i class="ti ti-check" aria-hidden="true"></i> Ekle</button>
+    <button class="add-cancel" onclick="closeAdd()">İptal</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+var logs=[];
+var goal=2000;
+var weight=70;
+var streak=0;
+var selectedAmt=250;
+
+function totalToday(){return logs.reduce(function(a,l){return a+l.ml},0)}
+
+function updateHome(){
+  var t=totalToday();
+  var pct=Math.min(100,Math.round(t/goal*100));
+  document.getElementById('wave-fill').style.height=pct+'%';
+  document.getElementById('wave-pct').textContent=pct+'%';
+  document.getElementById('wave-ml').textContent=t+' / '+goal+' ml';
+  document.getElementById('today-total').textContent=t;
+  document.getElementById('streak-num').textContent=streak;
+  if(t===0) document.getElementById('home-sub').textContent='Bugün henüz su içmedin.';
+  else if(pct<50) document.getElementById('home-sub').textContent='Harika başlangıç! Devam et.';
+  else if(pct<100) document.getElementById('home-sub').textContent='Hedefe yaklaşıyorsun! 💪';
+  else document.getElementById('home-sub').textContent='Günlük hedefe ulaştın! 🎉';
+  renderLogs();
+}
+
+function renderLogs(){
+  var el=document.getElementById('log-list');
+  if(logs.length===0){el.innerHTML='<div style="text-align:center;color:var(--color-text-tertiary);font-size:13px;padding:20px">Henüz kayıt yok</div>';return;}
+  el.innerHTML=logs.slice().reverse().map(function(l,i){
+    var ri=logs.length-1-i;
+    return '<div class="log-item"><div class="log-left"><i class="ti ti-droplet" aria-hidden="true"></i><div><div class="log-ml">'+l.ml+' ml</div><div class="log-time">'+l.time+'</div></div></div><button class="log-del" onclick="deleteLog('+ri+')" aria-label="Sil"><i class="ti ti-trash" aria-hidden="true"></i></button></div>';
+  }).join('');
+}
+
+function deleteLog(i){logs.splice(i,1);updateHome();showToast('Kayıt silindi');}
+
+function openAdd(amt){
+  selectedAmt=amt||250;
+  document.getElementById('modal-amount').textContent=selectedAmt+' ml';
+  document.querySelectorAll('.preset-btn').forEach(function(b){b.classList.remove('selected');if(parseInt(b.textContent)===selectedAmt)b.classList.add('selected');});
+  document.getElementById('add-modal').classList.add('open');
+}
+
+function closeAdd(){document.getElementById('add-modal').classList.remove('open');}
+
+function selectPreset(btn,amt){
+  selectedAmt=amt;
+  document.getElementById('modal-amount').textContent=amt+' ml';
+  document.querySelectorAll('.preset-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+}
+
+function confirmAdd(){
+  var now=new Date();
+  var h=now.getHours();var m=now.getMinutes();
+  var time=(h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  logs.push({ml:selectedAmt,time:time});
+  if(totalToday()>=goal&&logs.length===1||(totalToday()>=goal&&totalToday()-selectedAmt<goal)){streak++;}
+  closeAdd();
+  updateHome();
+  showToast(selectedAmt+' ml eklendi!');
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2000);
+}
+
+function changeGoal(){
+  var v=prompt('Günlük hedef (ml):', goal);
+  if(v&&!isNaN(v)&&parseInt(v)>0){goal=parseInt(v);document.getElementById('goal-display').textContent=goal+' ml';updateHome();}
+}
+
+function changeWeight(){
+  var v=prompt('Kilonuz (kg):', weight);
+  if(v&&!isNaN(v)&&parseInt(v)>0){weight=parseInt(v);goal=Math.round(weight*30/100)*100;document.getElementById('weight-display').textContent=weight+' kg';document.getElementById('goal-display').textContent=goal+' ml';updateHome();}
+}
+
+function renderStats(){
+  var days=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+  var mockData=[1800,2100,1600,2000,2200,900,totalToday()];
+  var maxV=Math.max.apply(null,mockData)||1;
+  var wg=document.getElementById('week-grid');
+  wg.innerHTML=days.map(function(d,i){
+    var pct=Math.round(mockData[i]/maxV*100);
+    var done=mockData[i]>=goal;
+    var isToday=i===6;
+    return '<div class="day-col"><div class="day-name">'+d+'</div><div class="day-bar-wrap"><div class="day-bar'+(isToday?' today':'')+'" style="height:'+pct+'%"></div></div><div class="day-dot'+(done?' done':'')+'"></div></div>';
+  }).join('');
+  var mg=document.getElementById('month-grid');
+  var cells='';
+  for(var i=1;i<=31;i++){
+    var cls='m-day';
+    if(i===9)cls+=' today-mark fill-low';
+    else if(i<9){var r=Math.random();cls+=r>0.6?' fill-full':r>0.3?' fill-half':' fill-low';}
+    cells+='<div class="'+cls+'">'+i+'</div>';
+  }
+  mg.innerHTML=cells;
+  var avg=Math.round(mockData.slice(0,6).reduce(function(a,b){return a+b},0)/6);
+  document.getElementById('avg-ml').textContent=avg;
+}
+
+function goTo(s){
+  document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});
+  document.getElementById('screen-'+s).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(el){el.classList.remove('active');});
+  var navItems=document.querySelectorAll('.nav-item');
+  var idx={home:0,stats:1,settings:2}[s];
+  navItems[idx].classList.add('active');
+  if(s==='stats')renderStats();
+}
+
+updateHome();
+</script>
