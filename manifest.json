@@ -1,0 +1,16 @@
+{
+  "name": "Aqua - Su Takibi",
+  "short_name": "Aqua",
+  "description": "Günlük su tüketimini takip et",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1D9E75",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
